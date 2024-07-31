@@ -19,5 +19,6 @@ TAGS
 *.sublime-project
 *.sublime-workspace
 tests.iml
+.vscode
 # Auto-copied by sbt-microsites
 docs/src/main/tut/contributing.md
