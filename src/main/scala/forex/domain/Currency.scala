@@ -1,42 +1,28 @@
 package forex.domain
 
-import cats.Show
+import io.circe.{ Decoder, Encoder }
+import io.circe.generic.semiauto.{ deriveDecoder, deriveEncoder }
 
-sealed trait Currency
+enum Currency(val value: String) {
+  case AUD extends Currency("AUD")
+  case CAD extends Currency("CAD")
+  case CHF extends Currency("CHF")
+  case EUR extends Currency("EUR")
+  case GBP extends Currency("GBP")
+  case NZD extends Currency("NZD")
+  case JPY extends Currency("JPY")
+  case SGD extends Currency("SGD")
+  case USD extends Currency("USD")
+}
 
 object Currency {
-  case object AUD extends Currency
-  case object CAD extends Currency
-  case object CHF extends Currency
-  case object EUR extends Currency
-  case object GBP extends Currency
-  case object NZD extends Currency
-  case object JPY extends Currency
-  case object SGD extends Currency
-  case object USD extends Currency
 
-  implicit val show: Show[Currency] = Show.show {
-    case AUD => "AUD"
-    case CAD => "CAD"
-    case CHF => "CHF"
-    case EUR => "EUR"
-    case GBP => "GBP"
-    case NZD => "NZD"
-    case JPY => "JPY"
-    case SGD => "SGD"
-    case USD => "USD"
-  }
+  def parseValue(value: String): Either[String, Currency] =
+    values
+      .find(_.value == value)
+      .toRight(s"$value is not a valid Currency")
 
-  def fromString(s: String): Currency = s.toUpperCase match {
-    case "AUD" => AUD
-    case "CAD" => CAD
-    case "CHF" => CHF
-    case "EUR" => EUR
-    case "GBP" => GBP
-    case "NZD" => NZD
-    case "JPY" => JPY
-    case "SGD" => SGD
-    case "USD" => USD
-  }
+  implicit val decodeCurrency: Decoder[Currency] = deriveDecoder[Currency]
+  implicit val encodeCurrency: Encoder[Currency] = deriveEncoder[Currency]
 
 }

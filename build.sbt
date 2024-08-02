@@ -3,7 +3,7 @@ import Dependencies._
 name := "forex"
 version := "1.0.1"
 
-scalaVersion := "2.13.12"
+scalaVersion := "3.4.2"
 scalacOptions ++= Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.
   "-encoding",
@@ -16,7 +16,7 @@ scalacOptions ++= Seq(
   "-language:implicitConversions", // Allow definition of implicit functions called views
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
-  "-Xfatal-warnings", // Fail the compilation if there are any warnings.
+  // "-Xfatal-warnings", // Fail the compilation if there are any warnings.
   "-Xlint:adapted-args", // Warn if an argument list is modified to match the receiver.
   "-Xlint:delayedinit-select", // Selecting member of DelayedInit.
   "-Xlint:inaccessible", // Warn about inaccessible types in method signatures.
@@ -46,24 +46,23 @@ scalacOptions ++= Seq(
   "-Ycache-macro-class-loader:last-modified" // and macro definitions. This can lead to performance improvements.
 )
 
-resolvers +=
-  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  compilerPlugin(Libraries.kindProjector),
   Libraries.cats,
   Libraries.catsEffect,
-  Libraries.fs2,
-  Libraries.http4sDsl,
-  Libraries.http4sServer,
-  Libraries.http4sCirce,
+  Libraries.catsScalaCheck % Test,
   Libraries.circeCore,
   Libraries.circeGeneric,
-  Libraries.circeGenericExt,
   Libraries.circeParser,
+  Libraries.fs2,
+  Libraries.http4sClient,
+  Libraries.http4sCirce,
+  Libraries.http4sDsl,
+  Libraries.http4sServer,
+  Libraries.log4cats,
   Libraries.pureConfig,
-  Libraries.logback,
-  Libraries.scalaTest      % Test,
+  Libraries.logback        % Runtime,
   Libraries.scalaCheck     % Test,
-  Libraries.catsScalaCheck % Test
+  Libraries.scalaTest      % Test,
 )

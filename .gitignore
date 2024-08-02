@@ -1,5 +1,6 @@
 project/boot
 target
+*.bloop
 .bsp
 .ensime
 .ensime_lucene
@@ -14,6 +15,8 @@ TAGS
 .idea
 .idea/*
 .idea_modules
+.metals
+metals.sbt
 .DS_Store
 .sbtrc
 *.sublime-project

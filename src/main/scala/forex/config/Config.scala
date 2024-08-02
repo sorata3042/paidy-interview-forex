@@ -1,10 +1,8 @@
 package forex.config
 
-import cats.effect.Sync
+import cats.effect.kernel.Sync
 import fs2.Stream
-
 import pureconfig.ConfigSource
-import pureconfig.generic.auto._
 
 object Config {
 
