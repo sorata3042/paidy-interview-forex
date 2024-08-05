@@ -1,7 +1,7 @@
 package forex.domain
 
-import io.circe.{ Decoder, Encoder }
-import io.circe.generic.semiauto.{ deriveDecoder, deriveEncoder }
+import cats.Show
+import io.circe.{ Decoder, Encoder, HCursor, Json }
 
 enum Currency(val value: String) {
   case AUD extends Currency("AUD")
@@ -17,12 +17,31 @@ enum Currency(val value: String) {
 
 object Currency {
 
-  def parseValue(value: String): Either[String, Currency] =
-    values
-      .find(_.value == value)
-      .toRight(s"$value is not a valid Currency")
+  implicit val show: Show[Currency] = Show.show(c => c.toString)
 
-  implicit val decodeCurrency: Decoder[Currency] = deriveDecoder[Currency]
-  implicit val encodeCurrency: Encoder[Currency] = deriveEncoder[Currency]
+  def fromString(s: String): Currency = s.toUpperCase match {
+    case "AUD" => AUD
+    case "CAD" => CAD
+    case "CHF" => CHF
+    case "EUR" => EUR
+    case "GBP" => GBP
+    case "NZD" => NZD
+    case "JPY" => JPY
+    case "SGD" => SGD
+    case "USD" => USD
+  }
 
+  implicit val currencyDecoder: Decoder[Currency] = new Decoder[Currency] {
+    final def apply(c: HCursor): Decoder.Result[Currency] =
+      for {
+        value <- c.value.as[String]
+      } yield {
+        Currency.fromString(value)
+      }
+  }
+
+  implicit val currencyEncoder: Encoder[Currency] = new Encoder[Currency] {
+    final def apply(currency: Currency): Json =
+      Json.fromString(currency.toString)
+  }
 }

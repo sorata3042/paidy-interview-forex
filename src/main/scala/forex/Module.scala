@@ -1,16 +1,17 @@
 package forex
 
-import cats.effect.kernel.Temporal
+import cats.effect.kernel.{ Async, Temporal }
 import forex.config.ApplicationConfig
-import forex.http.rates.RatesHttpRoutes
+import forex.http.rates.RatesHttpRoutes 
 import forex.programs.RatesProgram
 import forex.services.{ RatesService, RatesServices }
 import org.http4s.{ HttpApp, HttpRoutes}
+import org.http4s.client.Client
 import org.http4s.server.middleware.{ AutoSlash, Timeout }
 
-class Module[F[_]: Temporal](config: ApplicationConfig) {
+class Module[F[_]: Temporal: Async](config: ApplicationConfig, client: Client[F]) {
 
-  private val ratesService: RatesService[F] = RatesServices.dummy[F]
+  private val ratesService: RatesService[F] = RatesServices.oneFrameClient[F](client, config.oneFrame)
 
   private val ratesProgram: RatesProgram[F] = RatesProgram[F](ratesService)
 

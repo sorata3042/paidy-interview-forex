@@ -4,6 +4,8 @@ import forex.domain.{ Currency, Price, Timestamp }
 import io.circe.{ Decoder, Encoder }
 import io.circe.derivation.Configuration
 import io.circe.generic.semiauto.{ deriveDecoder, deriveEncoder }
+import io.circe.Json
+import java.time.format.DateTimeFormatter
 
 object Protocol {
 
@@ -21,6 +23,11 @@ object Protocol {
       timestamp: Timestamp
   )
 
-  implicit val responseEncoder: Encoder[GetApiResponse] = deriveEncoder[GetApiResponse]
+  implicit val responseEncoder: Encoder[GetApiResponse] = (a: GetApiResponse) => Json.obj(
+      ("from", Json.fromString(a.from.toString)),
+      ("to", Json.fromString(a.to.toString)),
+      ("price", Json.fromBigDecimal(a.price.value)),
+      ("timestamp", Json.fromString(a.timestamp.value.toString))
+  )
 
 }

@@ -51,7 +51,6 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 libraryDependencies ++= Seq(
   Libraries.cats,
   Libraries.catsEffect,
-  Libraries.catsScalaCheck % Test,
   Libraries.circeCore,
   Libraries.circeGeneric,
   Libraries.circeParser,
@@ -60,9 +59,14 @@ libraryDependencies ++= Seq(
   Libraries.http4sCirce,
   Libraries.http4sDsl,
   Libraries.http4sServer,
+  Libraries.logback,
   Libraries.log4cats,
   Libraries.pureConfig,
-  Libraries.logback        % Runtime,
-  Libraries.scalaCheck     % Test,
-  Libraries.scalaTest      % Test,
+
+  // Test
+  Libraries.catsScalaCheck,
+  Libraries.circeTesting,
+  Libraries.scalaCheck,
+  Libraries.scalaTest,
+  Libraries.scalaTestMockito
 )

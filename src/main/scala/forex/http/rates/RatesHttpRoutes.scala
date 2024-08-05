@@ -1,8 +1,8 @@
 package forex.http.rates
 
-import cats.effect.kernel.Sync
 import cats.effect.kernel.Temporal
 import cats.syntax.flatMap.toFlatMapOps
+import forex.domain.Price
 import forex.programs.RatesProgram
 import forex.programs.rates.{ Protocol => RatesProgramProtocol }
 import cats.effect.unsafe.implicits.global
