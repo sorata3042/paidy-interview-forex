@@ -1,7 +1,7 @@
 package forex.services.rates
 
 import forex.domain.Rate
-import forex.services.rates.errors.Error
+import forex.services.rates.errors.Error.OneFrameLookupFailed
 
 trait Algebra[F[_]] {
 
@@ -12,6 +12,6 @@ trait Algebra[F[_]] {
     * @param pair the currency pair
     * @return a [[Rate]]
     */
-  def get(pair: Rate.Pair): F[Either[Error.OneFrameLookupFailed, Rate]]
+  def get(pair: Rate.Pair): F[Either[OneFrameLookupFailed, Rate]]
 
 }

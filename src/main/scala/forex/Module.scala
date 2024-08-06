@@ -1,6 +1,7 @@
 package forex
 
 import cats.effect.kernel.{ Async, Temporal }
+import forex.cache.CacheStorage
 import forex.config.ApplicationConfig
 import forex.http.rates.RatesHttpRoutes 
 import forex.programs.RatesProgram
@@ -11,9 +12,11 @@ import org.http4s.server.middleware.{ AutoSlash, Timeout }
 
 class Module[F[_]: Temporal: Async](config: ApplicationConfig, client: Client[F]) {
 
+  private val cacheStorage: CacheStorage[F] = CacheStorage.inMemory[F](config.cache)
+
   private val ratesService: RatesService[F] = RatesServices.oneFrameClient[F](client, config.oneFrame)
 
-  private val ratesProgram: RatesProgram[F] = RatesProgram[F](ratesService)
+  private val ratesProgram: RatesProgram[F] = RatesProgram[F](ratesService, cacheStorage)
 
   private val ratesHttpRoutes: HttpRoutes[F] = new RatesHttpRoutes[F](ratesProgram).routes
 

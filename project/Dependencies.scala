@@ -12,7 +12,9 @@ object Dependencies {
     val pureConfig = "0.17.7"
     val logback = "1.5.6"
     val log4cats = "2.7.0"
+    val scaffeine = "5.3.0"
 
+    // Test
     val scalaCheck = "1.18.0"
     val scalaTest = "3.2.19"
     val catsScalaCheck = "0.3.2"
@@ -37,6 +39,7 @@ object Dependencies {
     lazy val log4cats = "org.typelevel" %% "log4cats-slf4j" % Versions.log4cats
     lazy val logback = "ch.qos.logback" % "logback-classic" % Versions.logback
     lazy val pureConfig = "com.github.pureconfig" %% "pureconfig-core" % Versions.pureConfig
+    lazy val scaffeine = "com.github.blemale" %% "scaffeine" % Versions.scaffeine
 
     // Test
     lazy val catsScalaCheck = "io.chrisdavenport" %% "cats-scalacheck" % Versions.catsScalaCheck
