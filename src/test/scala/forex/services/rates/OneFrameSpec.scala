@@ -22,9 +22,7 @@ class OneFrameSpec extends UnitSpec with MockitoSugar {
   val mockOneFrameConfig: OneFrameConfig = OneFrameConfig("host", 80, "token")
   val oneFrameClient = new OneFrameClient[IO](mockClient, mockOneFrameConfig)
 
-  behavior of "get"
-
-  it should "retrieve a rate successfully" in {
+  "get" should "retrieve a rate successfully" in {
     // Arrange
     when(mockClient.expect[List[Rate]](any[Request[IO]])(any[EntityDecoder[IO, List[Rate]]]))
         .thenReturn(IO.pure(List(rate)))
@@ -35,6 +33,26 @@ class OneFrameSpec extends UnitSpec with MockitoSugar {
     // Assert
     assert(result.isRight)
     assert(result.contains(rate))
+  }
+
+  "getAll" should "retrieve all rates successfully" in {
+    // Arrange
+    val pair2: Rate.Pair = Rate.Pair(Currency.USD, Currency.AUD)
+    val rate2: Rate = Rate(pair2, Price(2), Timestamp.now)
+    when(mockClient.expect[List[Rate]](any[Request[IO]])(any[EntityDecoder[IO, List[Rate]]]))
+        .thenReturn(IO.pure(List(rate, rate2)))
+
+    // Act
+    val result = oneFrameClient.getAll().unsafeRunSync()
+
+    // Assert
+    assert(result.isRight)
+    assert(result.contains(List(rate, rate2)))
+    result match {
+      case Right(rates: List[Rate])  => {
+        assert(result.contains(List(rate, rate2)))
+      }
+    }
   }
 
 }

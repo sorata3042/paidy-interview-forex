@@ -1,6 +1,5 @@
 package forex.domain
 
-import cats.Show
 import io.circe.{ Decoder, Encoder, HCursor, Json }
 
 enum Currency(val value: String) {
@@ -17,26 +16,12 @@ enum Currency(val value: String) {
 
 object Currency {
 
-  implicit val show: Show[Currency] = Show.show(c => c.toString)
-
-  def fromString(s: String): Currency = s.toUpperCase match {
-    case "AUD" => AUD
-    case "CAD" => CAD
-    case "CHF" => CHF
-    case "EUR" => EUR
-    case "GBP" => GBP
-    case "NZD" => NZD
-    case "JPY" => JPY
-    case "SGD" => SGD
-    case "USD" => USD
-  }
-
   implicit val currencyDecoder: Decoder[Currency] = new Decoder[Currency] {
-    final def apply(c: HCursor): Decoder.Result[Currency] =
+    def apply(c: HCursor): Decoder.Result[Currency] =
       for {
         value <- c.value.as[String]
       } yield {
-        Currency.fromString(value)
+        Currency.valueOf(value)
       }
   }
 

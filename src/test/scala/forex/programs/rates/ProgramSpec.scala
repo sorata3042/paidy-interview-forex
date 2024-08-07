@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import cats.implicits.catsSyntaxEitherId
 import forex.UnitSpec
-import forex.domain.{Currency, Price, Rate, Timestamp}
+import forex.domain.{ Currency, Price, Rate, Timestamp }
 import forex.programs.rates.Protocol.GetRatesRequest
 import forex.programs.rates.errors.Error
 import forex.services.RatesService
@@ -53,7 +53,7 @@ class ProgramSpec extends UnitSpec with MockitoSugar {
     val rate: Rate = Rate(pair, Price(0.777), Timestamp.now)
 
     when(mockCache.get(pair)).thenReturn(Option(rate))
-    when(mockRateService.get(pair)).thenReturn(IO.pure(rate.asRight[Error]))
+    when(mockRateService.getAll()).thenReturn(IO.pure(List(rate).asRight[Error]))
 
     // Act
     val result = program.get(request).unsafeRunSync()
@@ -70,8 +70,9 @@ class ProgramSpec extends UnitSpec with MockitoSugar {
     val pair: Rate.Pair = Rate.Pair(Currency.USD, Currency.JPY)
     val rate: Rate = Rate(pair, Price(2), Timestamp.now)
 
-    when(mockCache.get(pair)).thenReturn(Option.empty)
-    when(mockRateService.get(pair)).thenReturn(IO.pure(rate.asRight[Error]))
+    // first call returns empty, second should return a rate
+    when(mockCache.get(pair)).thenReturn(Option.empty).thenReturn(Option(rate))
+    when(mockRateService.getAll()).thenReturn(IO.pure(List(rate).asRight[Error]))
 
     // Act
     val result = program.get(request).unsafeRunSync()
@@ -81,7 +82,7 @@ class ProgramSpec extends UnitSpec with MockitoSugar {
     assert(result.contains(rate))
   }
 
-  it should "return an Error for a failed request" in {
+  "get when cache is empty and oneframe errors" should "return an Error for a failed request" in {
     // Arrange
     val request: GetRatesRequest = GetRatesRequest(Currency.USD, Currency.JPY)
     val pair: Rate.Pair = Rate.Pair(Currency.USD, Currency.JPY)
@@ -89,7 +90,7 @@ class ProgramSpec extends UnitSpec with MockitoSugar {
     val expectedError = RateLookupFailed(errorMsg)
 
     when(mockCache.get(pair)).thenReturn(Option.empty)
-    when(mockRateService.get(pair)).thenReturn(IO.pure(oneFrameError.asLeft[Rate]))
+    when(mockRateService.getAll()).thenReturn(IO.pure(oneFrameError.asLeft[Rate]))
 
     // Act
     val result = program.get(request).unsafeRunSync()

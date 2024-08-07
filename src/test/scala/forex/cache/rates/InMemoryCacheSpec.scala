@@ -45,6 +45,23 @@ class InMemoryCacheSpec extends UnitSpec {
     assert(result.contains(updatedRate))
   }
 
+  it should "store and retrieve multiple Rates in/from cache" in {
+    // Arrange
+    val pair2 = Rate.Pair(Currency.USD, Currency.CAD)
+    val rate2: Rate = Rate(pair2, Price(0.5), Timestamp.now)
+ 
+    // Act
+    cache.putAll(List(rate, rate2))
+    val result = cache.get(pair)
+    val result2 = cache.get(pair2)
+
+    // Assert
+    assert(result.isDefined)
+    assert(result.contains(rate))
+    assert(result2.isDefined)
+    assert(result2.contains(rate2))
+  }
+
   it should "error on get after Rate expires from cache" in {
     // Act
     cache.put(rate)

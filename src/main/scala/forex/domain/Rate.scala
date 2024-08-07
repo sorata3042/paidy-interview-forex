@@ -32,7 +32,7 @@ object Rate {
       to <- cursor.get[String]("to")
       price <- cursor.get[BigDecimal]("price")
       timestamp <- cursor.get[OffsetDateTime]("time_stamp")
-    } yield Rate(Pair(Currency.fromString(from), Currency.fromString(to)), Price(price), Timestamp(timestamp))
+    } yield Rate(Pair(Currency.valueOf(from), Currency.valueOf(to)), Price(price), Timestamp(timestamp))
   }
 
   implicit val rateEncoder: Encoder[Rate] =

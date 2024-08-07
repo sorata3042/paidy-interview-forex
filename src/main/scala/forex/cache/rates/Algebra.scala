@@ -17,4 +17,10 @@ trait Algebra[F[_]] {
     */
   def put(rate: Rate): Unit
 
+  /** Upserts cache with a list of [[Rate]].
+    *
+    * @param rates
+    */
+  def putAll(rates: List[Rate]): Unit
+
 }

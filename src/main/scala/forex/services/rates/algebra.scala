@@ -14,4 +14,12 @@ trait Algebra[F[_]] {
     */
   def get(pair: Rate.Pair): F[Either[OneFrameLookupFailed, Rate]]
 
+  /** Obtain all [[Rate]] from OneFrameService for the each possible
+    * [[Rate.Pair]] or a [[OneFrameLookupFailed]] if the OneFrameService
+    * call doesn't succeed.
+    *
+    * @return a list of [[Rate]]
+    */
+  def getAll(): F[Either[OneFrameLookupFailed, List[Rate]]]
+
 }

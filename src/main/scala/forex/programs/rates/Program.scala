@@ -34,12 +34,11 @@ class Program[F[_]: Applicative](
 
   // refresh cache and return new value
   private def getAndCacheRate(pair: Rate.Pair): F[Either[Error, Rate]] =
-    val clientOutput = ratesService.get(pair)
-    clientOutput.map {
+    ratesService.getAll().map {
       case Left(error: OneFrameLookupFailed) => Left(toProgramError(error))
-      case Right(rate: Rate) => {
-        cache.put(rate)
-        Right(rate)
+      case Right(rates: List[Rate]) => {
+        cache.putAll(rates) // cache all Rates
+        Right(cache.get(pair).get) // obtain desired Rate for Pair from cache
       }
     }
 

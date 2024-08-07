@@ -15,6 +15,7 @@ import org.http4s.circe.CirceEntityEncoder
 import org.http4s.implicits.uri
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import forex.programs.rates.errors.Error.RateLookupFailed
 
 class RatesHttpRoutesSpec extends UnitSpec with MockitoSugar {
 
@@ -28,7 +29,7 @@ class RatesHttpRoutesSpec extends UnitSpec with MockitoSugar {
 
   behavior of "httpRoutes"
 
-  it should "return a response for a request" in {
+  it should "return a response for a successful request" in {
     // Arrange
     val request = Request[IO](Method.GET, uri"/rates?from=USD&to=JPY")
     val expectedResponse = s"""{"from":"USD","to":"JPY","price":$rate,"timestamp":"${timestamp.value.toString}"}"""
