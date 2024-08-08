@@ -4,9 +4,9 @@ import forex.UnitSpec
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import forex.config.OneFrameConfig
-import forex.domain.{Currency, Price, Rate, Timestamp}
+import forex.domain.{Currency, Price, Rate, Timestamp }
 import forex.services.rates.interpreters.OneFrameClient
-import org.http4s.{EntityDecoder, Request}
+import org.http4s.{ EntityDecoder, Request }
 import org.http4s.FormDataDecoder.formEntityDecoder
 import org.http4s.client.Client
 import org.mockito.Mockito.when

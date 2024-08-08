@@ -1,6 +1,5 @@
 package forex.services.rates
 
-import cats.Applicative
 import cats.effect.kernel.Async
 import forex.config.OneFrameConfig
 import forex.services.rates.interpreters.OneFrameClient

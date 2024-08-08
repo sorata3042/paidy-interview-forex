@@ -2,16 +2,21 @@ package forex.cache.rates.interpreters
 
 import cats.effect.kernel.Async
 import com.github.blemale.scaffeine.{ Cache, Scaffeine }
-import forex.config.CacheConfig
-import forex.domain.Rate
 import forex.cache.rates.Algebra
+import forex.config.CacheConfig
+import forex.domain.{ Rate, Currency }
 import scala.collection.mutable.Map
 
+/** Accessor for Caffeine cache.
+  * Rates are stored within the cache using the Pair as the key.
+  *
+  * @param config
+  */
 class InMemoryCache[F[_]: Async](config: CacheConfig) extends Algebra[F] {
 
   private val cache: Cache[String, Rate] = Scaffeine()
       .expireAfterWrite(config.expireAfter)
-      .maximumSize(72) // same size as the total number of pairs that can be created
+      .maximumSize(161) // total number of pairs that can be created with the intermediary currency
       .build[String, Rate]()
 
   override def get(pair: Rate.Pair): Option[Rate] =

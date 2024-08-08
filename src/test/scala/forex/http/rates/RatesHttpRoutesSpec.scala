@@ -1,12 +1,13 @@
 package forex.http.rates
 
-import forex.UnitSpec
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
+import forex.UnitSpec
 import forex.domain.{ Currency, Price, Rate, Timestamp }
 import forex.http.jsonDecoder
 import forex.programs.RatesProgram
 import forex.programs.rates.Protocol.GetRatesRequest
+import forex.programs.rates.errors.Error.RateLookupFailed
 import io.circe.Json
 import io.circe.syntax.EncoderOps
 import java.time.OffsetDateTime
@@ -15,7 +16,6 @@ import org.http4s.circe.CirceEntityEncoder
 import org.http4s.implicits.uri
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import forex.programs.rates.errors.Error.RateLookupFailed
 
 class RatesHttpRoutesSpec extends UnitSpec with MockitoSugar {
 

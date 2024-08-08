@@ -1,46 +1,69 @@
 package forex.programs.rates
 
-import cats.Functor
-import cats.data.EitherT
-import cats.implicits.catsSyntaxEitherId
-import cats.implicits.catsSyntaxApplicativeId
-import forex.cache.CacheStorage
-import forex.domain.{ Price, Rate, Timestamp }
-import forex.programs.rates.errors.Error
-import forex.programs.rates.errors.toProgramError
-import forex.services.RatesService
-import fs2.Compiler.Target.forSync
 import cats.Applicative
+import cats.data.EitherT
+import cats.implicits.{ catsSyntaxEitherId, catsSyntaxApplicativeId, toFunctorOps }
+import forex.cache.CacheStorage
+import forex.domain.{ Currency, Price, Rate, Timestamp }
+import forex.domain.Rate.Pair
+import forex.programs.rates.errors.{ Error, toProgramError }
+import forex.services.RatesService
 import forex.services.rates.errors.Error.OneFrameLookupFailed
-import cats.implicits.toFunctorOps
+import fs2.Compiler.Target.forSync
 
-class Program[F[_]: Applicative](
-    ratesService: RatesService[F],
-    cache: CacheStorage[F]
-) extends Algebra[F] {
+/** Class for [[Rate]] retrieval logic.
+  *
+  * @param config
+  */
+class Program[F[_]: Applicative](ratesService: RatesService[F], cache: CacheStorage[F]) extends Algebra[F] {
 
-  override def get(request: Protocol.GetRatesRequest): F[Either[Error, Rate]] =
-    val pair = Rate.Pair(request.from, request.to)
-    if (pair.from == pair.to) {
-      return Rate(Rate.Pair(request.from, request.to), Price(1), Timestamp.now)
+  // using JPY as default currency intermediary
+  val defaultCurrency: Currency = Currency.JPY
+
+  override def get(request: Protocol.GetRatesRequest): F[Either[Error, Rate]] = {
+    val requestPair = Rate.Pair(request.from, request.to)
+    if (request.from == request.to) {
+      return Rate(requestPair, Price(1), Timestamp.now)
         .asRight[Error]
         .pure[F]
     }
 
-    cache.get(pair).match {
-        case Some(cachedRate) => cachedRate.asRight[Error].pure[F]
-        case None => getAndCacheRate(pair)
+    // verify cache has an entry present
+    cache.get(Pair(defaultCurrency, Currency.USD)).match {
+        case Some(cachedRate) => calculatedDesiredRate(requestPair).asRight[Error].pure[F]
+        case None => refreshCacheAndCalculateRate(requestPair)
     }
+  }
 
-  // refresh cache and return new value
-  private def getAndCacheRate(pair: Rate.Pair): F[Either[Error, Rate]] =
+  // get values from one-frame, populate cache, return newly calculated rate
+  private def refreshCacheAndCalculateRate(requestPair: Pair): F[Either[Error, Rate]] = {
     ratesService.getAll().map {
       case Left(error: OneFrameLookupFailed) => Left(toProgramError(error))
       case Right(rates: List[Rate]) => {
-        cache.putAll(rates) // cache all Rates
-        Right(cache.get(pair).get) // obtain desired Rate for Pair from cache
+        cache.putAll(rates)
+        Right(calculatedDesiredRate(requestPair))
       }
     }
+  }
+
+  // calculates the desired rate w/ cached rates
+  private def calculatedDesiredRate(requestPair: Pair): Rate = {
+    // these are the rates stored within the cache
+    if (requestPair.from == defaultCurrency) {
+      cache.get(requestPair).get
+    }
+    // the inverse of the rates are stored within the cache
+    else if (requestPair.to == defaultCurrency) {
+      val cachedRate: Rate = cache.get(Pair(defaultCurrency, requestPair.from)).get
+      Rate(requestPair, Price(BigDecimal(1)/cachedRate.price.value), cachedRate.timestamp)
+    }
+    // desired rate does not contain default transitional currency
+    else {
+      val fromRate: Rate = cache.get(Pair(defaultCurrency, requestPair.from)).get
+      val toRate: Rate = cache.get(Pair(defaultCurrency, requestPair.to)).get
+      Rate(requestPair, Price(toRate.price.value/fromRate.price.value), fromRate.timestamp)
+    }
+  }
 
 }
 

@@ -5,8 +5,8 @@ import forex.services.rates.errors.Error.OneFrameLookupFailed
 
 trait Algebra[F[_]] {
 
-  /** Obtain the [[Rate]] from OneFrameService for the given 
-    * [[Rate.Pair]] or a [[OneFrameLookupFailed]] if the OneFrameService
+  /** Obtain the [[Rate]] from OneFrameService for the given [[Rate.Pair]] 
+    * or a [[OneFrameLookupFailed]] if the OneFrameService
     * call doesn't succeed.
     *
     * @param pair the currency pair
@@ -14,11 +14,11 @@ trait Algebra[F[_]] {
     */
   def get(pair: Rate.Pair): F[Either[OneFrameLookupFailed, Rate]]
 
-  /** Obtain all [[Rate]] from OneFrameService for the each possible
-    * [[Rate.Pair]] or a [[OneFrameLookupFailed]] if the OneFrameService
+  /** Obtain all [[Rate]] from OneFrameService for the each possible [[Rate.Pair]] 
+    * with a from Currency.JPY or a [[OneFrameLookupFailed]] if the OneFrameService
     * call doesn't succeed.
     *
-    * @return a list of [[Rate]]
+    * @return a list of [[Rate]] with a from Currency.JPY
     */
   def getAll(): F[Either[OneFrameLookupFailed, List[Rate]]]
 

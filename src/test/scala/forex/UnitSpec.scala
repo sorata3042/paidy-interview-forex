@@ -1,9 +1,9 @@
 package forex
 
-import org.scalatest._
-import flatspec._
-import matchers._
+import org.scalatest.{ Inside, Inspectors, OptionValues }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-abstract class UnitSpec extends AnyFlatSpec with should.Matchers with OptionValues with Inside with Inspectors {
+abstract class UnitSpec extends AnyFlatSpec with Matchers with OptionValues with Inside with Inspectors {
 
 }

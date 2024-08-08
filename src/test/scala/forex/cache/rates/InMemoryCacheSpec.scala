@@ -1,14 +1,14 @@
 package forex.cache.rates
 
-import forex.UnitSpec
-import forex.domain.{ Currency, Price, Rate, Timestamp }
-import forex.cache.rates.interpreters.InMemoryCache
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
-import forex.config.CacheConfig
-import scala.concurrent.duration.FiniteDuration
-import java.util.concurrent.TimeUnit
 import cats.implicits.catsSyntaxApplicativeId
+import java.util.concurrent.TimeUnit
+import forex.UnitSpec
+import forex.cache.rates.interpreters.InMemoryCache
+import forex.config.CacheConfig
+import forex.domain.{ Currency, Price, Rate, Timestamp }
+import scala.concurrent.duration.FiniteDuration
 
 class InMemoryCacheSpec extends UnitSpec {
     
